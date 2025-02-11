@@ -19,13 +19,14 @@
     "react-router-dom": "6.12.1",
     "reactstrap": "9.2.0",
     "sass": "1.63.2",
+    "serve": "^14.2.4",
     "web-vitals": "3.3.2"
   },
   "scripts": {
-  "dev": "react-scripts start",
-  "build": "react-scripts build",
-  "start": "serve -s build",
-  "local": "react-scripts start"
+    "dev": "react-scripts start",
+    "build": "react-scripts build",
+    "start": "serve -s build",
+    "local": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [

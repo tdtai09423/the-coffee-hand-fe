@@ -2,6 +2,7 @@ import { Button, Nav, NavItem } from "reactstrap";
 import { Link, useLocation } from "react-router-dom";
 import user1 from "../assets/images/users/user4.jpg";
 import probg from "../assets/images/bg/download.jpg";
+import './sideBar.scss';
 
 const navigation = [
   {
@@ -10,44 +11,44 @@ const navigation = [
     icon: "bi bi-speedometer2",
   },
   {
-    title: "Alert",
-    href: "/alerts",
-    icon: "bi bi-bell",
+    title: "Orders",
+    href: "/orders",
+    icon: "bi bi-cart2",
   },
   {
-    title: "Badges",
-    href: "/badges",
-    icon: "bi bi-patch-check",
+    title: "Payments",
+    href: "/payments",
+    icon: "bi bi-credit-card",
   },
   {
-    title: "Buttons",
-    href: "/buttons",
-    icon: "bi bi-hdd-stack",
+    title: "Drinks & Categories",
+    href: "/drinks",
+    icon: "bi bi-cup-hot",
   },
   {
-    title: "Cards",
-    href: "/cards",
-    icon: "bi bi-card-text",
+    title: "Ingredients",
+    href: "/ingredients",
+    icon: "bi bi-egg",
   },
   {
-    title: "Grid",
-    href: "/grid",
-    icon: "bi bi-columns",
+    title: "Recipes",
+    href: "/recipes",
+    icon: "bi bi-card-list",
   },
   {
-    title: "Table",
-    href: "/table",
-    icon: "bi bi-layout-split",
+    title: "Users Management",
+    href: "/users",
+    icon: "bi bi-people",
   },
   {
-    title: "Forms",
-    href: "/forms",
-    icon: "bi bi-textarea-resize",
+    title: "Statistics & Reports",
+    href: "/reports",
+    icon: "bi bi-graph-up-arrow",
   },
   {
-    title: "Breadcrumbs",
-    href: "/breadcrumbs",
-    icon: "bi bi-link",
+    title: "Settings",
+    href: "/settings",
+    icon: "bi bi-gear",
   },
 ];
 
@@ -61,20 +62,11 @@ const Sidebar = () => {
     <div>
       <div className="d-flex align-items-center"></div>
       <div
-        className="profilebg"
-        style={{ background: `url(${probg}) no-repeat` }}
       >
-        <div className="p-3 d-flex">
+        <div className="p-3 d-flex justify-content-center align-items-center">
           <img src={user1} alt="user" width="50" className="rounded-circle" />
-          <Button
-            color="white"
-            className="ms-auto text-white d-lg-none"
-            onClick={() => showMobilemenu()}
-          >
-            <i className="bi bi-x"></i>
-          </Button>
         </div>
-        <div className="bg-dark text-white p-2 opacity-75">Steave Rojer</div>
+        <div className="bg-dark text-white p-2 opacity-75 text-center">Administrator</div>
       </div>
       <div className="p-3 mt-2">
         <Nav vertical className="sidebarNav">
@@ -100,3 +92,55 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
+
+
+
+// const navigation = [
+//   {
+//     title: "Dashboard",
+//     href: "/starter",
+//     icon: "bi bi-speedometer2",
+//   },
+//   {
+//     title: "Alert",
+//     href: "/alerts",
+//     icon: "bi bi-bell",
+//   },
+//   {
+//     title: "Badges",
+//     href: "/badges",
+//     icon: "bi bi-patch-check",
+//   },
+//   {
+//     title: "Buttons",
+//     href: "/buttons",
+//     icon: "bi bi-hdd-stack",
+//   },
+//   {
+//     title: "Cards",
+//     href: "/cards",
+//     icon: "bi bi-card-text",
+//   },
+//   {
+//     title: "Grid",
+//     href: "/grid",
+//     icon: "bi bi-columns",
+//   },
+//   {
+//     title: "Table",
+//     href: "/table",
+//     icon: "bi bi-layout-split",
+//   },
+//   {
+//     title: "Forms",
+//     href: "/forms",
+//     icon: "bi bi-textarea-resize",
+//   },
+//   {
+//     title: "Breadcrumbs",
+//     href: "/breadcrumbs",
+//     icon: "bi bi-link",
+//   },
+// ];

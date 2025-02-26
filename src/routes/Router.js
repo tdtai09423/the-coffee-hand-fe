@@ -7,15 +7,17 @@ const FullLayout = lazy(() => import("../layouts/FullLayout.js"));
 /***** Pages ****/
 
 const Starter = lazy(() => import("../views/Starter.js"));
-const About = lazy(() => import("../views/About.js"));
-const Alerts = lazy(() => import("../views/ui/Alerts"));
-const Badges = lazy(() => import("../views/ui/Badges"));
-const Buttons = lazy(() => import("../views/ui/Buttons"));
-const Cards = lazy(() => import("../views/ui/Cards"));
-const Grid = lazy(() => import("../views/ui/Grid"));
-const Tables = lazy(() => import("../views/ui/Tables"));
-const Forms = lazy(() => import("../views/ui/Forms"));
-const Breadcrumbs = lazy(() => import("../views/ui/Breadcrumbs"));
+const Orders = lazy(() => import("../views/ui/Orders"));
+const Payments = lazy(() => import("../views/ui/Payments"));
+const Drinks = lazy(() => import("../views/ui/Drinks"));
+const Ingredients = lazy(() => import("../views/ui/Ingredients"));
+const Recipes = lazy(() => import("../views/ui/Recipes"));
+const Users = lazy(() => import("../views/ui/Users"));
+const Reports = lazy(() => import("../views/ui/Reports"));
+const Settings = lazy(() => import("../views/ui/Settings"));
+const Test = lazy(() => import("../views/ui/Sample/Tables"));
+const Login = lazy(() => import("../views/ui/login"));
+
 
 /*****Routes******/
 
@@ -26,15 +28,15 @@ const ThemeRoutes = [
     children: [
       { path: "/", element: <Navigate to="/starter" /> },
       { path: "/starter", exact: true, element: <Starter /> },
-      { path: "/about", exact: true, element: <About /> },
-      { path: "/alerts", exact: true, element: <Alerts /> },
-      { path: "/badges", exact: true, element: <Badges /> },
-      { path: "/buttons", exact: true, element: <Buttons /> },
-      { path: "/cards", exact: true, element: <Cards /> },
-      { path: "/grid", exact: true, element: <Grid /> },
-      { path: "/table", exact: true, element: <Tables /> },
-      { path: "/forms", exact: true, element: <Forms /> },
-      { path: "/breadcrumbs", exact: true, element: <Breadcrumbs /> },
+      { path: "/orders", exact: true, element: <Orders /> },
+      { path: "/payments", exact: true, element: <Payments /> },
+      { path: "/drinks", exact: true, element: <Drinks /> },
+      { path: "/ingredients", exact: true, element: <Ingredients /> },
+      { path: "/recipes", exact: true, element: <Recipes /> },
+      { path: "/users", exact: true, element: <Users /> },
+      { path: "/reports", exact: true, element: <Reports /> },
+      { path: "/settings", exact: true, element: <Settings /> },
+      { path: "/test", exact: true, element: <Login /> },
     ],
   },
 ];

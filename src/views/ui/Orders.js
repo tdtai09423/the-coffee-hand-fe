@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Input, Button } from "reactstrap";
+import {
+  Row,
+  Col,
+  Input,
+  Button,
+  Nav,
+  NavItem,
+  NavLink,
+} from "reactstrap";
 import { Form } from "react-bootstrap";
+import classnames from "classnames"; // Nếu bạn muốn toggle class active cho NavLink
 import orderAPI from "../../api/orderApi"; // API orders
 import drinksAPI from "../../api/drinksApi"; // API drinks
 import usersAPI from "../../api/usersApi"; // API users
@@ -14,10 +23,19 @@ const Orders = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
+
+  // Các state lọc dữ liệu
   const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  // Thanh điều hướng status (thay thế cho All, Pickup, Return)
+  const [statusTab, setStatusTab] = useState("all"); // all, process, finish
+
   const [drinksMap, setDrinksMap] = useState({});
   const [usersMap, setUsersMap] = useState({});
 
+  // Lấy danh sách orders
   const fetchOrders = async (page, size) => {
     try {
       const response = await orderAPI.getAll(page, size);
@@ -34,6 +52,7 @@ const Orders = () => {
     }
   };
 
+  // Lấy danh sách drinks
   const fetchDrinks = async () => {
     try {
       const response = await drinksAPI.getAll(1, 100);
@@ -72,17 +91,39 @@ const Orders = () => {
           });
       }
     });
-    // Chỉ cần chạy lại khi orders thay đổi
   }, [orders]);
 
+  // Filter dữ liệu theo searchTerm, date range, và statusTab
   const filteredOrders = orders.filter((order) => {
+    // Tìm kiếm theo tên user (từ usersMap)
+    const fullName = usersMap[order.userId]
+      ? usersMap[order.userId].toLowerCase()
+      : "";
     const searchLower = searchTerm.toLowerCase();
-    return (
-      order.id.toLowerCase().includes(searchLower) ||
-      order.userId.toLowerCase().includes(searchLower)
-    );
+    const matchesSearch =
+      !searchLower || fullName.includes(searchLower) || order.id.toLowerCase().includes(searchLower);
+
+    // Khoảng thời gian
+    const orderDate = new Date(order.date);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    const matchesDate = (!start || orderDate >= start) && (!end || orderDate <= end);
+
+    // Trạng thái theo tab
+    let matchesTab = true;
+    if (statusTab === "process") {
+      // Giả sử status = "0" là đang xử lý
+      matchesTab = order.status === "0";
+    } else if (statusTab === "finish") {
+      // Giả sử status = "4" là hoàn thành
+      matchesTab = order.status === "4";
+    }
+    // statusTab === "all" => không lọc gì thêm
+
+    return matchesSearch && matchesDate && matchesTab;
   });
 
+  // Các cột cho bảng
   const columns = [
     {
       header: "Order ID",
@@ -101,13 +142,21 @@ const Orders = () => {
       key: "status",
       render: (row) => {
         if (row.status === "5") {
-          return <span className="p-2 bg-danger rounded-circle d-inline-block ms-3"></span>;
+          return (
+            <span className="p-2 bg-danger rounded-circle d-inline-block ms-3"></span>
+          );
         } else if (row.status === "0") {
-          return <span className="p-2 bg-warning rounded-circle d-inline-block ms-3"></span>;
+          return (
+            <span className="p-2 bg-warning rounded-circle d-inline-block ms-3"></span>
+          );
         } else if (row.status === "4") {
-          return <span className="p-2 bg-success rounded-circle d-inline-block ms-3"></span>;
+          return (
+            <span className="p-2 bg-success rounded-circle d-inline-block ms-3"></span>
+          );
         } else {
-          return <span className="p-2 bg-success rounded-circle d-inline-block ms-3"></span>;
+          return (
+            <span className="p-2 bg-secondary rounded-circle d-inline-block ms-3"></span>
+          );
         }
       },
     },
@@ -116,7 +165,7 @@ const Orders = () => {
       key: "totalPrice",
     },
     {
-      header: "User", // Thay đổi cột này để hiển thị tên người dùng
+      header: "User",
       key: "userId",
       render: (row) => <div>{usersMap[row.userId] || "Loading..."}</div>,
     },
@@ -127,7 +176,7 @@ const Orders = () => {
         <ul style={{ paddingLeft: "1rem" }}>
           {row.orderDetails?.map((detail) => (
             <li key={detail.id}>
-              {drinksMap[detail.drinkId] || detail.drinkId} x ({detail.total}) 
+              {drinksMap[detail.drinkId] || detail.drinkId} x ({detail.total})
               <div style={{ fontSize: "13px" }}>{detail.note}</div>
             </li>
           ))}
@@ -136,25 +185,89 @@ const Orders = () => {
     },
   ];
 
-  const colSizes = [4, 2, 1, 1, 2, 2];
+  // Tỷ lệ chia cột (tùy chỉnh theo giao diện)
+  const colSizes = [3, 2, 1, 1, 2, 3];
 
   return (
     <div>
-      <Row className="mb-3">
-        <Col>
-          <div className="d-flex">
-            <Input
-              type="text"
-              placeholder="Search Orders..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Button color="primary" className="ms-2">
-              Search
-            </Button>
-          </div>
+      {/* Thanh filter trên cùng */}
+      <Row className="align-items-center mb-3">
+        <Col md={4}>
+          <Input
+            type="text"
+            placeholder="Search by any order parameter..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Col>
+
+        {/* Ví dụ: 1 input cho start date, 1 input cho end date 
+            Hoặc bạn có thể dùng 1 date range picker nếu muốn */}
+        <Col md={2}>
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            placeholder="Start Date"
+          />
+        </Col>
+        <Col md={2}>
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            placeholder="End Date"
+          />
+        </Col>
+
+        {/* Department (placeholder) */}
+        <Col md={2}>
+          <Form.Select>
+            <option>Department</option>
+            <option value="dep1">Department 1</option>
+            <option value="dep2">Department 2</option>
+          </Form.Select>
+        </Col>
+
+        {/* Saved filters, More filters (placeholder) */}
+        <Col md={2} className="d-flex justify-content-end">
+          <Button color="light" className="me-2">
+            Saved filters (0)
+          </Button>
+          <Button color="light">More filters</Button>
         </Col>
       </Row>
+
+      {/* Thanh điều hướng quản lý status (All, Process, Finish) */}
+      <Nav tabs className="mb-3">
+        <NavItem>
+          <NavLink
+            className={classnames({ active: statusTab === "all" })}
+            onClick={() => setStatusTab("all")}
+            style={{ cursor: "pointer" }}
+          >
+            All
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={classnames({ active: statusTab === "process" })}
+            onClick={() => setStatusTab("process")}
+            style={{ cursor: "pointer" }}
+          >
+            Process
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={classnames({ active: statusTab === "finish" })}
+            onClick={() => setStatusTab("finish")}
+            style={{ cursor: "pointer" }}
+          >
+            Finish
+          </NavLink>
+        </NavItem>
+      </Nav>
 
       {/* Bảng dữ liệu */}
       <Row>
@@ -167,6 +280,7 @@ const Orders = () => {
         </Col>
       </Row>
 
+      {/* Phân trang */}
       <Row className="mt-3">
         <Col className="d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">

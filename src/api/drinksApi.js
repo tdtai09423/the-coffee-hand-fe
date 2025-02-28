@@ -9,6 +9,14 @@ const drinksAPI = {
         const url = `/drink/${id}`;
         return apiClient.get(url);
     },
+    addNewDrinks(data) {
+        const url = '/drink';
+        return apiClient.post(url, data);
+    },
+    deleteDrinksById(id) {
+        const url = `/drink/${id}`;
+        return apiClient.delete(url);
+    },
 
 }
 

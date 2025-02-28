@@ -1,7 +1,6 @@
-import { Button, Nav, NavItem } from "reactstrap";
+import { Nav, NavItem } from "reactstrap";
 import { Link, useLocation } from "react-router-dom";
 import user1 from "../assets/images/users/user4.jpg";
-import probg from "../assets/images/bg/download.jpg";
 import './sideBar.scss';
 
 const navigation = [
@@ -31,11 +30,6 @@ const navigation = [
     icon: "bi bi-egg",
   },
   {
-    title: "Recipes",
-    href: "/recipes",
-    icon: "bi bi-card-list",
-  },
-  {
     title: "Users Management",
     href: "/users",
     icon: "bi bi-people",
@@ -53,9 +47,6 @@ const navigation = [
 ];
 
 const Sidebar = () => {
-  const showMobilemenu = () => {
-    document.getElementById("sidebarArea").classList.toggle("showSidebar");
-  };
   let location = useLocation();
 
   return (

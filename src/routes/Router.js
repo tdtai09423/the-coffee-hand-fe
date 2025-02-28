@@ -5,7 +5,6 @@ import { Navigate } from "react-router-dom";
 const FullLayout = lazy(() => import("../layouts/FullLayout.js"));
 
 /***** Pages ****/
-
 const Starter = lazy(() => import("../views/Starter.js"));
 const Orders = lazy(() => import("../views/ui/Orders"));
 const Payments = lazy(() => import("../views/ui/Payments"));
@@ -18,10 +17,10 @@ const Settings = lazy(() => import("../views/ui/Settings"));
 const Test = lazy(() => import("../views/ui/Sample/Tables"));
 const Login = lazy(() => import("../views/ui/login"));
 
-
 /*****Routes******/
-
 const ThemeRoutes = [
+  { path: "/login", exact: true, element: <Login /> },
+
   {
     path: "/",
     element: <FullLayout />,
@@ -35,8 +34,7 @@ const ThemeRoutes = [
       { path: "/recipes", exact: true, element: <Recipes /> },
       { path: "/users", exact: true, element: <Users /> },
       { path: "/reports", exact: true, element: <Reports /> },
-      { path: "/settings", exact: true, element: <Settings /> },
-      { path: "/test", exact: true, element: <Login /> },
+      { path: "/settings", exact: true, element: <Settings /> },     
     ],
   },
 ];

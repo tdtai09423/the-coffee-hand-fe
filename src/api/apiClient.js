@@ -1,7 +1,8 @@
 import axios from "axios";
+import config from "./config";  // Import từ file config.js
 
 const apiClient = axios.create({
-    baseURL: 'https://localhost:7099/api',
+    baseURL: config.API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     }

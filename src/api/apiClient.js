@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "./config";  // Import từ file config.js
+import authAPI from "./authApi";
 
 const apiClient = axios.create({
     baseURL: config.API_BASE_URL,
@@ -9,8 +10,11 @@ const apiClient = axios.create({
 });
 
 // Add a request interceptor
-axios.interceptors.request.use(function (config) {
-    // Do something before request is sent
+apiClient.interceptors.request.use(function (config) {
+    const token = authAPI.getToken();
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 }, function (error) {
     // Do something with request error
@@ -18,13 +22,17 @@ axios.interceptors.request.use(function (config) {
 });
 
 // Add a response interceptor
-axios.interceptors.response.use(function (response) {
+apiClient.interceptors.response.use(function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     return response.data;
 }, function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
+    if (error.response?.status === 401) {
+        // Handle unauthorized access
+        authAPI.logout();
+    }
     return Promise.reject(error);
 });
 

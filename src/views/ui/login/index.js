@@ -2,27 +2,36 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { FaCoffee } from 'react-icons/fa';
+import authAPI from '../../../api/authApi';
 import './login.scss';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    const validUsername = process.env.REACT_APP_ADMIN_USERNAME || 'admin';
-    const validPassword = process.env.REACT_APP_ADMIN_PASSWORD || 'admin';
 
-    if (username === validUsername && password === validPassword) {
-      localStorage.setItem('isAuthenticated', 'true');
-      // Redirect to the page user tried to visit or to starter page
-      const from = location.state?.from?.pathname || '/starter';
-      navigate(from, { replace: true });
-    } else {
-      setError('Invalid username or password');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await authAPI.login({ email, password });
+      if (response.token) {
+        authAPI.setToken(response.token);
+        // Redirect to the page user tried to visit or to starter page
+        const from = location.state?.from?.pathname || '/starter';
+        navigate(from, { replace: true });
+      } else {
+        setError('Invalid response from server');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -48,12 +57,12 @@ const Login = () => {
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="login-input"
               />
@@ -75,8 +84,9 @@ const Login = () => {
               variant="primary" 
               type="submit" 
               className="w-100 login-button"
+              disabled={isLoading}
             >
-              Sign In
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </Form>
         </div>

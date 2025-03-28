@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -16,30 +16,138 @@ const Users = lazy(() => import("../views/ui/Users"));
 const Reports = lazy(() => import("../views/ui/Reports"));
 const Settings = lazy(() => import("../views/ui/Settings"));
 const Test = lazy(() => import("../views/ui/Sample/Tables"));
-const Login = lazy(() => import("../views/ui/login/index"));
+const Login = lazy(() => import("../views/ui/login"));
+
+// Preload components
+const preloadComponents = () => {
+  const components = [
+    Starter,
+    Orders,
+    Payments,
+    Drinks,
+    Ingredients,
+    Recipes,
+    Users,
+    Reports,
+    Settings,
+    Test,
+    Login
+  ];
+  
+  components.forEach(component => {
+    if (component.preload) {
+      component.preload();
+    }
+  });
+};
 
 /*****Routes******/
 const ThemeRoutes = [
-  { path: "/login", exact: true, element: <Login /> },
+  { 
+    path: "/login", 
+    exact: true, 
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Login />
+      </Suspense>
+    )
+  },
 
   {
     path: "/",
     element: (
       <ProtectedRoute>
-        <FullLayout />
+        <Suspense fallback={<div>Loading...</div>}>
+          <FullLayout />
+        </Suspense>
       </ProtectedRoute>
     ),
     children: [
-      { path: "/", element: <Navigate to="/starter" /> },
-      { path: "/starter", exact: true, element: <Starter /> },
-      { path: "/orders", exact: true, element: <Orders /> },
-      { path: "/payments", exact: true, element: <Payments /> },
-      { path: "/drinks", exact: true, element: <Drinks /> },
-      { path: "/ingredients", exact: true, element: <Ingredients /> },
-      { path: "/recipes", exact: true, element: <Recipes /> },
-      { path: "/users", exact: true, element: <Users /> },
-      { path: "/reports", exact: true, element: <Reports /> },
-      { path: "/settings", exact: true, element: <Settings /> },     
+      { 
+        path: "/", 
+        element: <Navigate to="/starter" /> 
+      },
+      { 
+        path: "/starter", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Starter />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/orders", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Orders />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/payments", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Payments />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/drinks", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Drinks />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/ingredients", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Ingredients />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/recipes", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Recipes />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/users", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Users />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/reports", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Reports />
+          </Suspense>
+        )
+      },
+      { 
+        path: "/settings", 
+        exact: true, 
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Settings />
+          </Suspense>
+        )
+      },     
     ],
   },
 ];

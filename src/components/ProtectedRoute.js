@@ -1,12 +1,13 @@
-import { Navigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-  // Check if user is authenticated by looking for auth data in localStorage
+  const location = useLocation();
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
   if (!isAuthenticated) {
-    // Redirect to login if not authenticated
-    return <Navigate to="/login" replace />;
+    // Redirect to login page but save the attempted url
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

@@ -5,10 +5,26 @@ const ingredientsAPI = {
         const url = `/ingredient/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`;
         return apiClient.get(url);
     },
+
+    create(ingredient) {
+        const url = '/ingredient';
+        return apiClient.post(url, ingredient);
+    },
+
+    update(ingredient) {
+        const url = `/ingredient/${ingredient.id}`;
+        return apiClient.put(url, ingredient);
+    },
+
+    delete(id) {
+        const url = `/ingredient/${id}`;
+        return apiClient.delete(url);
+    },
+
     getIngredientById(id) {
         const url = `/ingredient/${id}`;
         return apiClient.get(url);
-    },
+    }
 }
 
 export default ingredientsAPI;

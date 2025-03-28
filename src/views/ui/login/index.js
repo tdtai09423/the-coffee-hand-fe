@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { FaCoffee } from 'react-icons/fa';
 import './login.scss';
@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const location = useLocation();
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -18,7 +18,9 @@ const Login = () => {
 
     if (username === validUsername && password === validPassword) {
       localStorage.setItem('isAuthenticated', 'true');
-      navigate('/starter');
+      // Redirect to the page user tried to visit or to starter page
+      const from = location.state?.from?.pathname || '/starter';
+      navigate(from, { replace: true });
     } else {
       setError('Invalid username or password');
     }

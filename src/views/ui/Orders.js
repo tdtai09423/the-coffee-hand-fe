@@ -7,6 +7,8 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Label,
+  FormGroup,
 } from "reactstrap";
 import { Form } from "react-bootstrap";
 import classnames from "classnames"; // Nếu bạn muốn toggle class active cho NavLink
@@ -18,37 +20,62 @@ import DynamicProjectTable from "../../components/dashboard/DynamicTable";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
 
   // Các state lọc dữ liệu
-  const [searchTerm, setSearchTerm] = useState("");
+  const [userId, setUserId] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  // Thanh điều hướng status (thay thế cho All, Pickup, Return)
-  const [statusTab, setStatusTab] = useState("all"); // all, process, finish
+  const [statusTab, setStatusTab] = useState("all");
+  const [error, setError] = useState("");
 
   const [drinksMap, setDrinksMap] = useState({});
   const [usersMap, setUsersMap] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Lấy danh sách orders
-  const fetchOrders = async (page, size) => {
+  // Format date to MM/dd/yyyy
+  const formatDate = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    const year = d.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  // Lấy danh sách orders với filter
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    setError("");
     try {
-      const response = await orderAPI.getAll(page, size);
+      const formattedStartDate = startDate ? formatDate(startDate) : "";
+      const formattedEndDate = endDate ? formatDate(endDate) : "";
+      const status = statusTab === "all" ? "" : statusTab === "process" ? "Pending" : "Done";
+
+      const response = await orderAPI.getAll(
+        pageNumber,
+        pageSize,
+        userId,
+        formattedStartDate,
+        formattedEndDate,
+        status
+      );
+      
       const data = response.data;
       setOrders(data.items || []);
-      setPageNumber(data.pageNumber);
-      setPageSize(data.pageSize);
       setTotalPages(data.totalPages);
       setTotalCount(data.totalCount);
       setHasNextPage(data.hasNextPage);
       setHasPreviousPage(data.hasPreviousPage);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách orders:", error);
+      setError("Không thể tải danh sách orders. Vui lòng thử lại sau.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,15 +94,16 @@ const Orders = () => {
     }
   };
 
+  // Effect cho việc load dữ liệu
   useEffect(() => {
-    fetchOrders(pageNumber, pageSize);
-  }, [pageNumber, pageSize]);
+    fetchOrders();
+  }, [pageNumber, pageSize, userId, startDate, endDate, statusTab]);
 
   useEffect(() => {
     fetchDrinks();
   }, []);
 
-  // Sau khi lấy orders, load thông tin user cho từng order nếu chưa có trong usersMap
+  // Load user info
   useEffect(() => {
     orders.forEach((order) => {
       if (!usersMap[order.userId]) {
@@ -93,35 +121,26 @@ const Orders = () => {
     });
   }, [orders]);
 
-  // Filter dữ liệu theo searchTerm, date range, và statusTab
-  const filteredOrders = orders.filter((order) => {
-    // Tìm kiếm theo tên user (từ usersMap)
-    const fullName = usersMap[order.userId]
-      ? usersMap[order.userId].toLowerCase()
-      : "";
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch =
-      !searchLower || fullName.includes(searchLower) || order.id.toLowerCase().includes(searchLower);
+  // Remove the filteredOrders variable since we're now filtering at the API level
+  const filteredOrders = orders;
 
-    // Khoảng thời gian
-    const orderDate = new Date(order.date);
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
-    const matchesDate = (!start || orderDate >= start) && (!end || orderDate <= end);
-
-    // Trạng thái theo tab
-    let matchesTab = true;
-    if (statusTab === "process") {
-      // Giả sử status = "0" là đang xử lý
-      matchesTab = order.status === "0";
-    } else if (statusTab === "finish") {
-      // Giả sử status = "4" là hoàn thành
-      matchesTab = order.status === "4";
+  // Handle filter changes
+  const handleFilterChange = (type, value) => {
+    setPageNumber(1); // Reset về trang 1 khi filter thay đổi
+    switch(type) {
+      case 'userId':
+        setUserId(value);
+        break;
+      case 'startDate':
+        setStartDate(value);
+        break;
+      case 'endDate':
+        setEndDate(value);
+        break;
+      default:
+        break;
     }
-    // statusTab === "all" => không lọc gì thêm
-
-    return matchesSearch && matchesDate && matchesTab;
-  });
+  };
 
   // Các cột cho bảng
   const columns = [
@@ -153,11 +172,10 @@ const Orders = () => {
           return (
             <span className="p-2 bg-success rounded-circle d-inline-block ms-3"></span>
           );
-        } else {
-          return (
-            <span className="p-2 bg-secondary rounded-circle d-inline-block ms-3"></span>
-          );
         }
+        return (
+          <span className="p-2 bg-secondary rounded-circle d-inline-block ms-3"></span>
+        );
       },
     },
     {
@@ -185,60 +203,79 @@ const Orders = () => {
     },
   ];
 
-  // Tỷ lệ chia cột (tùy chỉnh theo giao diện)
   const colSizes = [3, 2, 1, 1, 2, 3];
 
   return (
     <div>
-      {/* Thanh filter trên cùng */}
+      {/* Thanh filter */}
       <Row className="align-items-center mb-3">
-        <Col md={4}>
-          <Input
-            type="text"
-            placeholder="Search by any order parameter..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <Col md={3}>
+          <FormGroup>
+            <Label for="userId">User ID</Label>
+            <Input
+              id="userId"
+              type="text"
+              placeholder="Enter User ID"
+              value={userId}
+              onChange={(e) => handleFilterChange('userId', e.target.value)}
+            />
+          </FormGroup>
         </Col>
+        <Col md={3}>
+          <FormGroup>
+            <Label for="startDate">From</Label>
+            <Input
+              id="startDate"
+              type="date"
+              value={startDate}
+              onChange={(e) => handleFilterChange('startDate', e.target.value)}
+            />
+          </FormGroup>
+        </Col>
+        {startDate && (
+          <Col md={3}>
+            <FormGroup>
+              <Label for="endDate">To</Label>
+              <Input
+                id="endDate"
+                type="date"
+                value={endDate}
+                min={startDate}
+                onChange={(e) => handleFilterChange('endDate', e.target.value)}
+              />
+            </FormGroup>
+          </Col>
+        )}
+      </Row>
 
-        {/* Ví dụ: 1 input cho start date, 1 input cho end date 
-            Hoặc bạn có thể dùng 1 date range picker nếu muốn */}
-        <Col md={2}>
-          <Input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            placeholder="Start Date"
-          />
-        </Col>
-        <Col md={2}>
-          <Input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            placeholder="End Date"
-          />
-        </Col>
+      {/* Hiển thị lỗi nếu có */}
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
 
-        {/* Department (placeholder) */}
-        <Col md={2}>
-          <Form.Select>
-            <option>Department</option>
-            <option value="dep1">Department 1</option>
-            <option value="dep2">Department 2</option>
-          </Form.Select>
-        </Col>
-
-        {/* Saved filters, More filters (placeholder) */}
-        <Col md={2} className="d-flex justify-content-end">
-          <Button color="light" className="me-2">
-            Saved filters (0)
-          </Button>
-          <Button color="light">More filters</Button>
+      {/* Page Size Dropdown */}
+      <Row className="mb-3">
+        <Col md={3}>
+          <FormGroup>
+            <Label for="pageSize">Orders per page</Label>
+            <Input
+              id="pageSize"
+              type="select"
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+            >
+              <option value={5}>5 orders</option>
+              <option value={10}>10 orders</option>
+              <option value={20}>20 orders</option>
+              <option value={50}>50 orders</option>
+            </Input>
+          </FormGroup>
         </Col>
       </Row>
 
-      {/* Thanh điều hướng quản lý status (All, Process, Finish) */}
+      {/* Status tabs */}
       <Nav tabs className="mb-3">
         <NavItem>
           <NavLink
@@ -269,6 +306,15 @@ const Orders = () => {
         </NavItem>
       </Nav>
 
+      {/* Loading indicator */}
+      {isLoading && (
+        <div className="text-center my-3">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
+
       {/* Bảng dữ liệu */}
       <Row>
         <Col lg="12">
@@ -284,39 +330,24 @@ const Orders = () => {
       <Row className="mt-3">
         <Col className="d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
-            <div className="text-nowrap" style={{ minWidth: "150px" }}>
-              Rows per page:
-            </div>
-            <Form.Select
-              aria-label="Rows per page"
-              className="ms-2"
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(parseInt(e.target.value, 10));
-                setPageNumber(1);
-              }}
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </Form.Select>
+            <span>Total: {totalCount} orders</span>
           </div>
           <div>
-            <span className="ms-3 me-4">
-              Page {pageNumber} of {totalPages || 1}
-            </span>
             <Button
               color="primary"
               className="ms-2"
-              disabled={pageNumber <= 1 || !hasPreviousPage}
+              disabled={!hasPreviousPage || isLoading}
               onClick={() => setPageNumber(pageNumber - 1)}
             >
               Prev
             </Button>
+            <span className="mx-3">
+              Page {pageNumber} of {totalPages}
+            </span>
             <Button
               color="primary"
               className="ms-2"
-              disabled={pageNumber >= totalPages || !hasNextPage}
+              disabled={!hasNextPage || isLoading}
               onClick={() => setPageNumber(pageNumber + 1)}
             >
               Next

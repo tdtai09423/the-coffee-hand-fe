@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { Navigate } from "react-router-dom";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 /****Layouts*****/
 const FullLayout = lazy(() => import("../layouts/FullLayout.js"));
@@ -15,7 +16,7 @@ const Users = lazy(() => import("../views/ui/Users"));
 const Reports = lazy(() => import("../views/ui/Reports"));
 const Settings = lazy(() => import("../views/ui/Settings"));
 const Test = lazy(() => import("../views/ui/Sample/Tables"));
-const Login = lazy(() => import("../views/ui/login"));
+const Login = lazy(() => import("../views/ui/login/index"));
 
 /*****Routes******/
 const ThemeRoutes = [
@@ -23,7 +24,11 @@ const ThemeRoutes = [
 
   {
     path: "/",
-    element: <FullLayout />,
+    element: (
+      <ProtectedRoute>
+        <FullLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { path: "/", element: <Navigate to="/starter" /> },
       { path: "/starter", exact: true, element: <Starter /> },

@@ -26,7 +26,7 @@ const routesConfig = [
       { path: "/recipes", exact: true, element: <Recipes /> },
       { path: "/users", exact: true, element: <Users /> },
       { path: "/reports", exact: true, element: <Reports /> },
-      { path: "/settings", exact: true, element: <Settings /> },
+      { path: "/machines", exact: true, element: <Settings /> },
       { path: "/test", exact: true, element: <Test /> },
     ],
   },

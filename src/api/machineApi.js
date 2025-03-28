@@ -1,8 +1,8 @@
 import apiClient from './apiClient';
 
 const machineAPI = {
-    getAll(pageNumber = 1, pageSize = 10) {
-        const url = `/machines/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+    getAll() {
+        const url = `/MachineInfo/machines`;
         return apiClient.get(url);
     },
 

@@ -26,12 +26,8 @@ const Settings = () => {
         return;
       }
 
-      if (!response.data) {
-        console.error('No data in response:', response);
-        return;
-      }
 
-      setMachines(response.data);
+      setMachines(response);
     } catch (error) {
       console.error("Error fetching machines:", error);
     } finally {

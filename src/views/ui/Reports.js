@@ -112,14 +112,14 @@ const Reports = () => {
       }
 
       // Tính tổng doanh thu cho mỗi ngày
-      response.data.items.forEach(order => {
+      response.items.forEach(order => {
         const orderDate = new Date(order.date);
         const day = orderDate.getDate();
         dailyRevenue[day] += order.totalPrice || 0;
       });
 
       setMonthlyData(Object.values(dailyRevenue));
-      setCurrentStats(calculateStats(response.data.items));
+      setCurrentStats(calculateStats(response.items));
 
       // Lấy dữ liệu tháng trước
       const previousStartDate = new Date(selectedYear, selectedMonth - 2, 1);
@@ -133,7 +133,7 @@ const Reports = () => {
         previousEndDate.toISOString()
       );
 
-      setPreviousStats(calculateStats(previousResponse.data.items));
+      setPreviousStats(calculateStats(previousResponse.items));
 
     } catch (error) {
       console.error("Error fetching monthly data:", error);
@@ -162,14 +162,14 @@ const Reports = () => {
       const monthlyRevenue = Array(12).fill(0);
 
       // Tính tổng doanh thu cho mỗi tháng
-      response.data.items.forEach(order => {
+      response.items.forEach(order => {
         const orderDate = new Date(order.date);
         const month = orderDate.getMonth();
         monthlyRevenue[month] += order.totalPrice || 0;
       });
 
       setYearlyData(monthlyRevenue);
-      setCurrentStats(calculateStats(response.data.items));
+      setCurrentStats(calculateStats(response.items));
 
       // Lấy dữ liệu năm trước
       const previousStartDate = new Date(selectedYear - 1, 0, 1);
@@ -183,7 +183,7 @@ const Reports = () => {
         previousEndDate.toISOString()
       );
 
-      setPreviousStats(calculateStats(previousResponse.data.items));
+      setPreviousStats(calculateStats(previousResponse.items));
 
     } catch (error) {
       console.error("Error fetching yearly data:", error);

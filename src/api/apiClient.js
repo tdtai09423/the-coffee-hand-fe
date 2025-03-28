@@ -3,7 +3,7 @@ import config from "./config";  // Import từ file config.js
 import authAPI from "./authApi";
 
 const apiClient = axios.create({
-    baseURL: config.API_BASE_URL,
+    baseURL: "https://localhost:7099/api",
     headers: {
         'Content-Type': 'application/json',
     }

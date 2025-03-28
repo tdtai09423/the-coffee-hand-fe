@@ -65,7 +65,8 @@ const Orders = () => {
         status
       );
       
-      const data = response.data;
+      const data = response;
+      console.log(data);
       setOrders(data.items || []);
       setTotalPages(data.totalPages);
       setTotalCount(data.totalCount);
@@ -83,7 +84,8 @@ const Orders = () => {
   const fetchDrinks = async () => {
     try {
       const response = await drinksAPI.getAll(1, 100);
-      const drinksArray = response.data.items || [];
+      const drinksArray = response.items || [];
+      
       const mapping = {};
       drinksArray.forEach((drink) => {
         mapping[drink.id] = drink.name;
@@ -110,8 +112,8 @@ const Orders = () => {
         usersAPI
           .getUsersById(order.userId)
           .then((response) => {
-            const user = response.data;
-            const fullName = `${user.firstName} ${user.lastName}`;
+            const user = response;
+            const fullName = `${user.email}`;
             setUsersMap((prev) => ({ ...prev, [order.userId]: fullName }));
           })
           .catch((error) => {

@@ -70,8 +70,8 @@ const Drinks = () => {
         drinksAPI.getAll(1, 100)
       ]);
       
-      setCategories([{ id: "all", name: "All Drinks" }, ...categoriesRes.data.items]);
-      setDrinks(drinksRes.data.items);
+      setCategories([{ id: "all", name: "All Drinks" }, ...categoriesRes.items]);
+      setDrinks(drinksRes.items);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {

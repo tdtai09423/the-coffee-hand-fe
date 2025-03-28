@@ -24,6 +24,11 @@ const ingredientsAPI = {
     getIngredientById(id) {
         const url = `/ingredient/${id}`;
         return apiClient.get(url);
+    },
+
+    getIngredientByName(name) {
+        const url = `/ingredient/by-name?name=${encodeURIComponent(name)}`;
+        return apiClient.get(url);
     }
 }
 

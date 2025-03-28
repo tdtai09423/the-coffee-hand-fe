@@ -27,7 +27,7 @@ const Users = () => {
   const fetchUsers = async (page, size) => {
     try {
       const response = await usersAPI.getAll(page, size);
-      const data = response.data;
+      const data = response;
       setUsers(data.items || []);
       setPageNumber(data.pageNumber);
       setPageSize(data.pageSize);

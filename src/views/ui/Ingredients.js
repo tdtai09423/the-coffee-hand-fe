@@ -29,7 +29,7 @@ const Ingredients = () => {
     setIsLoading(true);
     try {
       const response = await ingredientsAPI.getAll(page, size);
-      const data = response.data;
+      const data = response;
       setIngredients(data.items || []);
       setPageNumber(data.pageNumber);
       setPageSize(data.pageSize);

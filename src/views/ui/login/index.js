@@ -13,8 +13,8 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    const validUsername = process.env.REACT_APP_ADMIN_USERNAME;
-    const validPassword = process.env.REACT_APP_ADMIN_PASSWORD;
+    const validUsername = process.env.REACT_APP_ADMIN_USERNAME || 'admin';
+    const validPassword = process.env.REACT_APP_ADMIN_PASSWORD || 'admin';
 
     if (username === validUsername && password === validPassword) {
       localStorage.setItem('isAuthenticated', 'true');

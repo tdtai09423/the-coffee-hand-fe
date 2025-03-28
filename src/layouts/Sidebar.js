@@ -15,9 +15,9 @@ const navigation = [
     icon: "bi bi-cart2",
   },
   {
-    title: "Payments",
-    href: "/payments",
-    icon: "bi bi-credit-card",
+    title: "Recipes",
+    href: "/recipes",
+    icon: "bi bi-list-check",
   },
   {
     title: "Drinks & Categories",
@@ -40,8 +40,8 @@ const navigation = [
     icon: "bi bi-graph-up-arrow",
   },
   {
-    title: "Settings",
-    href: "/settings",
+    title: "Machines",
+    href: "/machines",
     icon: "bi bi-gear",
   },
 ];

@@ -140,7 +140,7 @@ const ThemeRoutes = [
         )
       },
       { 
-        path: "/settings", 
+        path: "/machines", 
         exact: true, 
         element: (
           <Suspense fallback={<div>Loading...</div>}>

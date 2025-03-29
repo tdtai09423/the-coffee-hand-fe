@@ -22,7 +22,7 @@ const drinksAPI = {
         return apiClient.put(url, data);
     },
     uploadImage(file) {
-        const url = '/api/image/upload';
+        const url = '/image/upload';
         const formData = new FormData();
         formData.append('file', file);
         return apiClient.post(url, formData, {

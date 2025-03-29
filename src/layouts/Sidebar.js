@@ -4,11 +4,11 @@ import user1 from "../assets/images/users/user4.jpg";
 import './sideBar.scss';
 
 const navigation = [
-  {
-    title: "Dashboard",
-    href: "/starter",
-    icon: "bi bi-speedometer2",
-  },
+  // {
+  //   title: "Dashboard",
+  //   href: "/starter",
+  //   icon: "bi bi-speedometer2",
+  // },
   {
     title: "Orders",
     href: "/orders",

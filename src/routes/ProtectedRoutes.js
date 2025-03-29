@@ -14,14 +14,14 @@ import Settings from '../views/ui/Settings';
 const ProtectedRoutes = () => {
   return (
     <Routes>
-      <Route
+      {/* <Route
         path="/starter"
         element={
           <ProtectedRoute>
             <Starter />
           </ProtectedRoute>
         }
-      />
+      /> */}
       <Route
         path="/orders"
         element={

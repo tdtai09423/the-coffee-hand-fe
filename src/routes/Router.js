@@ -65,7 +65,7 @@ const ThemeRoutes = [
     children: [
       { 
         path: "/", 
-        element: <Navigate to="/starter" /> 
+        element: <Navigate to="/orders" /> 
       },
       { 
         path: "/starter", 
